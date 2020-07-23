@@ -17,4 +17,32 @@ class Blockchain:
 		"""
 		String representation of the blockchain.
 		"""
-		return "Bockchain:%s" % (self.chain)
+		return "Blockchain:%s" % (self.chain)
+
+	def replace_chain(self, chain):
+		"""
+		A blockchain can be replaced if:
+		1. Length of the incoming chain is greater than the current chain.
+		2. The incoming chain is valid.
+		"""
+		if len(chain) <= len(self.chain):
+			raise Exception("Chain length is smaller than current chain.")
+		try:
+			Blockchain.is_chain_valid(chain)
+		except Exception as e:
+			raise Exception("The incoming chain is not valid")
+		self.chain = chain 
+
+	@staticmethod
+	def is_chain_valid(chain):
+		"""
+		A Blockchain is said to be valid if:
+		1. The Genesis block is valid.
+		2. All the blocks in the blockchain are valid.
+		"""
+		if chain[0] != Block.genesis():
+			raise Exception("Genesis block was invalid")
+		for i in range(1, len(chain)):
+			last_block = chain[i-1]
+			block = chain[i]
+			Block.is_block_valid(last_block, block)

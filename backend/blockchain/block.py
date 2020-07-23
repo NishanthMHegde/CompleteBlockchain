@@ -34,6 +34,12 @@ class Block:
 		block_str = "{timestamp:%s,\nhash:%s,\n,last_hash:%s,\ndata:%s,\n,difficulty:%s,\nnonce:%s,\n}" % \
 			(self.timestamp, self.hash, self.last_hash, self.data, self.difficulty, self.nonce)
 
+	def __eq__(self, other):
+		"""
+		Overriding the default comparison operator.
+		"""
+		return self.__dict__ == other.__dict__
+
 	@staticmethod
 	def mine_block(last_block, data):
 		"""
@@ -64,6 +70,31 @@ class Block:
 		if last_block.difficulty - 1 > 0:
 			return last_block.difficulty -1 
 		return 1
+
+	@staticmethod
+	def is_block_valid(last_block, block):
+		"""
+		Method to check if a given block is valid.
+		Block is valid if:
+		1. Last hash of block is equal to hash of last_block.
+		2. Hash of the block meets the proof of work requirement.
+		3. Block difficulty must vary by 1 unit.
+		4. Hash of the block is equal to the hash which is generated again.
+		"""
+		if block.last_hash != last_block.hash:
+			raise Exception("The hash of last block did not match")
+		if hex_to_binary(block.hash[2:])[0:block.difficulty] != "0" * block.difficulty:
+			raise Exception("The proof of work requirement was not met")
+		if abs(block.difficulty - last_block.difficulty) !=1:
+			raise Exception("The block difficulty was not valid")
+		new_hash = crypto_hash.crypto_hash(block.timestamp,
+							   block.data,
+							   block.last_hash,
+							   block.difficulty,
+							   block.nonce
+							   )
+		if new_hash != block.hash:
+			raise Exception("The block hash was not valid")
 
 	@staticmethod
 	def genesis():
