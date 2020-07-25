@@ -19,6 +19,20 @@ class Blockchain:
 		"""
 		return "Blockchain:%s" % (self.chain)
 
+	def to_json(self):
+		"""
+		Method to serialize a Blockchain object into a JSON/dictionary format.
+		"""
+		return list(map(lambda block: block.to_json(),self.chain))
+
+	@staticmethod
+	def from_json(blockchain_json):
+		"""
+		Method to deserialize a Blockchain in the form of a dict into an actual Blockchain object.
+		"""
+		blockchain = Blockchain()
+		blockchain.chain = list(map(lambda block: Block.from_json(block),blockchain_json))
+
 	def replace_chain(self, chain):
 		"""
 		A blockchain can be replaced if:
@@ -30,7 +44,7 @@ class Blockchain:
 		try:
 			Blockchain.is_chain_valid(chain)
 		except Exception as e:
-			raise Exception("The incoming chain is not valid")
+			raise Exception("%s" % e)
 		self.chain = chain 
 
 	@staticmethod

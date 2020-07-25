@@ -40,6 +40,19 @@ class Block:
 		"""
 		return self.__dict__ == other.__dict__
 
+	def to_json(self):
+		"""
+		Method to serialize a Block object into a JSON/ dictioanry format.
+		"""
+		return self.__dict__
+
+	@staticmethod
+	def from_json(block_json):
+		"""
+		Method to deserialize a Block in the form of a dict into an acctual Block object.
+		"""
+		return Block(**block_json)
+
 	@staticmethod
 	def mine_block(last_block, data):
 		"""
@@ -78,14 +91,14 @@ class Block:
 		Block is valid if:
 		1. Last hash of block is equal to hash of last_block.
 		2. Hash of the block meets the proof of work requirement.
-		3. Block difficulty must vary by 1 unit.
+		3. Block difficulty must not vary by more than 1 unit.
 		4. Hash of the block is equal to the hash which is generated again.
 		"""
 		if block.last_hash != last_block.hash:
 			raise Exception("The hash of last block did not match")
 		if hex_to_binary(block.hash[2:])[0:block.difficulty] != "0" * block.difficulty:
 			raise Exception("The proof of work requirement was not met")
-		if abs(block.difficulty - last_block.difficulty) !=1:
+		if abs(block.difficulty - last_block.difficulty) > 1:
 			raise Exception("The block difficulty was not valid")
 		new_hash = crypto_hash.crypto_hash(block.timestamp,
 							   block.data,
