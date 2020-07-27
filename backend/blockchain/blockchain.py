@@ -44,7 +44,7 @@ class Blockchain:
 		try:
 			Blockchain.is_chain_valid(chain)
 		except Exception as e:
-			raise Exception("%s" % e)
+			raise Exception("The incoming chain is not valid")
 		self.chain = chain 
 
 	@staticmethod
