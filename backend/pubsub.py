@@ -2,21 +2,25 @@ from pubnub.pubnub import PubNub
 from pubnub.pnconfiguration import PNConfiguration 
 from pubnub.callbacks import SubscribeCallback
 from backend.blockchain.block import Block
+from backend.wallet.transaction_pool import TransactionPool
+from backend.wallet.transactions import Transactions
 pnconfig = PNConfiguration()
 pnconfig.subscribe_key = 'sub-c-97b26636-ce45-11ea-b3f2-c27cb65b13f4'
 pnconfig.publish_key = 'pub-c-15161881-8829-4356-992a-5aeb9a798fa4'
 
 CHANNELS = {
 	'TEST':'TEST',
-	'BLOCK': 'BLOCK'
+	'BLOCK': 'BLOCK',
+	'TRANSACTIONS': 'TRANSACTIONS'
 }
 
 class Listener(SubscribeCallback):
 	"""
 	Override the default listener message method to suit our requirements
 	"""
-	def __init__(self, blockchain):
+	def __init__(self, blockchain, transaction_pool):
 		self.blockchain = blockchain
+		self.transaction_pool = transaction_pool
 
 	def message(self, pubnub, message_object):
 		print('Message channel: %s | Message object: %s' % (message_object.channel, message_object.message))
@@ -32,6 +36,9 @@ class Listener(SubscribeCallback):
 				print("Chain replacement was successful")
 			except Exception as e:
 				print("Chain replacement was not successful: %s" % (e))
+		elif message_object.channel == 'TRANSACTIONS':
+			transaction = Transactions.from_json(message_object.message)
+			self.transaction_pool.set_transaction(transaction)
 
 
 class PubSub():
@@ -40,13 +47,13 @@ class PubSub():
 	Used to communicate between different blockchain peers.
 	"""
 
-	def __init__(self, blockchain):
+	def __init__(self, blockchain, transaction_pool):
 		#initialize the pubnub object
 		self.pubnub = PubNub(pnconfig)
 		#subscribe to the channels that we need to listen to and receive data
-		self.pubnub.subscribe().channels(CHANNELS['BLOCK']).execute()
+		self.pubnub.subscribe().channels(CHANNELS.values()).execute()
 		#add the listener to listen for incoming block data
-		self.pubnub.add_listener(Listener(blockchain))
+		self.pubnub.add_listener(Listener(blockchain, transaction_pool))
 
 	def publish(self, message, channel):
 		"""
@@ -59,5 +66,11 @@ class PubSub():
 		Method to broadcast the block in the form of JSON to all peers.
 		"""
 		self.publish(block.to_json(), CHANNELS['BLOCK'])
+
+	def broadcast_transaction(self, transaction):
+		"""
+		Method to broadcast the block in the form of JSON to all peers.
+		"""
+		self.publish(transaction.to_json(), CHANNELS['TRANSACTIONS'])
 
 
