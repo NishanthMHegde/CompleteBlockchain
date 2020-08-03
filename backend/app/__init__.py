@@ -25,7 +25,9 @@ def get_blockchain():
 
 @app.route('/blockchain/mine')
 def mine_block():
-    blockchain.add_block('sample_data')
+    #get the transaction data and put it into the data field of add_block
+    transaction_data = transaction_pool.transaction_data()
+    blockchain.add_block(transaction_data)
     block = blockchain.chain[-1]
     #publish the block throughout the network to the subscribed channel
     pubsub.broadcast_block(block)

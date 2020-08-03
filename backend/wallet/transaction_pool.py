@@ -15,3 +15,26 @@ class TransactionPool:
 				return transaction
 		return None
 
+	def transaction_data(self):
+		"""
+		Method to get the transaction data present in the transaction pool \
+		in the format of list of JSON.
+		"""
+		transaction_data = list(map(lambda transaction: transaction.to_json(), self.transaction_map.values()))
+		return transaction_data
+
+	def clear_transaction(self, blockchain):
+		"""
+		Method to clear all the trasnactions in the transaction pool which were a \
+		part of any of the blocks in the blockchain.
+		"""
+		for index,block in enumerate(blockchain.chain):
+			if index == 0:
+				continue
+			for transaction in block.data:
+				try:
+					del self.transaction_map[transaction['id']]
+				except KeyError:
+					pass
+
+
