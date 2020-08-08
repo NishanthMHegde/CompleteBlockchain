@@ -31,6 +31,8 @@ def mine_block():
     block = blockchain.chain[-1]
     #publish the block throughout the network to the subscribed channel
     pubsub.broadcast_block(block)
+    #After everytime a block is mined, we need to clear the transaction pool.
+    transaction_pool.clear_transaction(blockchain)
     return block.to_json(), 200
 
 @app.route('/wallet/transaction', methods=['POST'])

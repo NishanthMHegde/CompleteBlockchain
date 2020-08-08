@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import (encode_dss_signature, decode_dss_signature)
 from cryptography.exceptions import InvalidSignature
 
+
 class Wallet:
 	"""
 	Used to hold the cryptocurrency
@@ -55,3 +56,31 @@ class Wallet:
 			return True
 		except InvalidSignature:
 			return False
+
+	@staticmethod
+	def calculate_balance(blockchain, address):
+		"""
+		Method to calculate the balances of a Wallet given its address.
+		If the wallet's address is in the transaction's input, then we set the balance to the amount in input field.
+		If the wallet's address is in the transaction's output, then we add the value in output field to the balance. 
+		"""
+		balance = STARTING_BALANCE
+		for index, block in enumerate(blockchain.chain):
+			if index == 0:
+				continue
+			for transaction in block.data:
+				if transaction['input']['address'] == address:
+					balance = transaction['output'][address]
+				elif address in transaction['output']:
+					balance = balance + transaction['output'][address]
+		return balance
+
+if __name__ == '__main__':
+	from backend.wallet.transactions import Transactions
+	from backend.blockchain.blockchain import Blockchain
+	wallet = Wallet()
+	blockchain = Blockchain()
+	amount = 34
+	tr1 = Transactions(wallet, 'recp1', amount)
+	blockchain.add_block([tr1.to_json()])
+	print(Wallet.calculate_balance(blockchain, wallet.address))
