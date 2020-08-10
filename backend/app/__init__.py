@@ -11,7 +11,7 @@ from backend.wallet.transaction_pool import TransactionPool
 
 app = Flask(__name__)
 blockchain = Blockchain()
-wallet = Wallet()
+wallet = Wallet(blockchain)
 transaction_pool = TransactionPool()
 pubsub = PubSub(blockchain, transaction_pool)
 
@@ -27,6 +27,9 @@ def get_blockchain():
 def mine_block():
     #get the transaction data and put it into the data field of add_block
     transaction_data = transaction_pool.transaction_data()
+    #Append the transaction reward into the wallet of the miner
+    transaction_reward = Transactions.transaction_reward(wallet).to_json()
+    transaction_data.append(transaction_reward)
     blockchain.add_block(transaction_data)
     block = blockchain.chain[-1]
     #publish the block throughout the network to the subscribed channel
@@ -54,6 +57,10 @@ def make_transaction():
     #broadcast the transaction object
     pubsub.broadcast_transaction(transaction)
     return jsonify(transaction.to_json())
+
+@app.route('/wallet/info')
+def get_wallet_info():
+    return jsonify({"address": wallet.address, "balance":wallet.balance})
 
 ROOT_PORT = 5000
 PORT = ROOT_PORT

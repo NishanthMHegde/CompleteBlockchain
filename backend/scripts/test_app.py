@@ -5,6 +5,7 @@ from backend.blockchain.blockchain import Blockchain
 from backend.blockchain.block import Block
 import requests
 import time
+import json
 
 PORT = 5000
 def get_blockchain():
@@ -15,7 +16,9 @@ def mine_block():
 	requests.get('http://127.0.0.1:%s/blockchain/mine' % (PORT))
 
 def post_transaction(recipient, amount):
-	res = requests.post('http://127.0.0.1:%s/wallet/transaction' %(PORT), json={'recipient':recipient, 'amount': amount})
+	# json_data=json.dumps({'recipient':recipient, 'amount': amount})
+	# print(json_data)
+	res = requests.post('http://127.0.0.1:%s/wallet/transaction' %(PORT), json={"recipient": recipient, "amount":amount})
 	print(res.status_code)
 
 print("Starting blockchain")
@@ -34,3 +37,7 @@ mine_block()
 print("Final blockchain")
 blockchain = get_blockchain()
 print(blockchain)
+
+#print the balance of the wallet
+print("The wallet information is")
+print(requests.get('http://127.0.0.1:%s/wallet/info' % (PORT)).json())

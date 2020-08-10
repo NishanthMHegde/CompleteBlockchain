@@ -14,7 +14,8 @@ class Wallet:
 	Create signatures using the private key
 	Verify signatures using the public key
 	"""
-	def __init__(self):
+	def __init__(self, blockchain=None):
+		self.blockchain = blockchain
 		"""
 		Initialize the private key, public key, starting balance and the sender's address.
 		"""
@@ -24,7 +25,6 @@ class Wallet:
 		self.public_key = self.private_key.public_key() #obtain public key from private key
 		#serialize the public key so as to easily convert the transaction class to a JSON
 		self.public_key = self.serialize_public_key()
-		self.balance = STARTING_BALANCE
 		self.address = str(uuid.uuid4())[:8] #first 8 characters is enough to get 3 trillion different results
 
 	def serialize_public_key(self):
@@ -41,6 +41,14 @@ class Wallet:
 		#decode the byte format of string to get a tuple of 2 items
 		signature = decode_dss_signature(signature)
 		return signature
+
+	@property
+	def balance(self):
+		"""
+		Whenever the balance attribute of the Wallet object is inferred, this method is called automatically.
+		"""
+		return Wallet.calculate_balance(self.blockchain, self.address)
+	
 
 	@staticmethod
 	def verify(public_key, data, signature):
@@ -65,6 +73,9 @@ class Wallet:
 		If the wallet's address is in the transaction's output, then we add the value in output field to the balance. 
 		"""
 		balance = STARTING_BALANCE
+		#handle the scenario where blockchain is None
+		if blockchain is None:
+			return balance
 		for index, block in enumerate(blockchain.chain):
 			if index == 0:
 				continue
