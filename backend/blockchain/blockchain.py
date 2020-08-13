@@ -1,4 +1,6 @@
 from backend.blockchain.block import Block
+from backend.wallet.transactions import Transactions
+from backend.config import MINING_REWARD_INPUT
 
 class Blockchain:
 	"""
@@ -60,3 +62,28 @@ class Blockchain:
 			last_block = chain[i-1]
 			block = chain[i]
 			Block.is_block_valid(last_block, block)
+
+	@staticmethod
+	def is_chain_transaction_valid(chain):
+		"""
+		Method to verify if each of the transactions in the chain is valid.
+		Transaction is valid if:
+		1. Each transation appears only once in the blockchain.
+		2. There is only one reward transaction.
+		3. The transaction is valid.
+		"""
+		transaction_ids = set()
+		for index,block in enumerate(chain):
+			if index == 0:
+				continue
+			has_reward_transaction = False
+			for transaction_json in block.data:
+				transaction = Transactions.from_json(transaction_json)
+				if transaction.input == MINING_REWARD_INPUT:
+					if has_reward_transaction is True:
+						raise Exception("Transaction with id %s has multiple rewards" % (transaction.id))
+					has_reward_transaction = True
+				if transaction.id in transaction_ids:
+					raise Exception("Transaction with id %s is not unique" % (transaction.id))
+				transaction_ids.add(transaction.id)
+				Transactions.verify_transaction(transaction)
