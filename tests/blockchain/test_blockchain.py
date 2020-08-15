@@ -73,3 +73,13 @@ def test_blockchain_valid_transaction_duplicate_rewardss():
 	blockchain.add_block([transaction, reward_transaction, reward_transaction])
 	with pytest.raises(Exception, match="has multiple rewards"):
 		Blockchain.is_chain_transaction_valid(blockchain.chain)
+
+def test_blockchain_valid_transaction_incorrect_historical_balance(blockchain):
+	wallet = Wallet()
+	bad_transaction = Transactions(wallet, 'recipient', 1)
+	bad_transaction.output[wallet.address] = 9000
+	bad_transaction.input['amount'] = 9001
+	bad_transaction.input['signature'] = wallet.sign(bad_transaction.output)
+	blockchain.add_block([bad_transaction.to_json()])
+	with pytest.raises(Exception, match="did not have the correct balance"):
+		Blockchain.is_chain_transaction_valid(blockchain.chain)

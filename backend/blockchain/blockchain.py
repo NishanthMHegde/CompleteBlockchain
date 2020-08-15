@@ -1,5 +1,6 @@
 from backend.blockchain.block import Block
 from backend.wallet.transactions import Transactions
+from backend.wallet.wallet import Wallet  
 from backend.config import MINING_REWARD_INPUT
 
 class Blockchain:
@@ -83,6 +84,15 @@ class Blockchain:
 					if has_reward_transaction is True:
 						raise Exception("Transaction with id %s has multiple rewards" % (transaction.id))
 					has_reward_transaction = True
+				else:
+					#calculate historical balance using a historical balance
+					historical_chain = chain[:index]
+					historical_blockchain = Blockchain()
+					historical_blockchain.chain = historical_chain
+					#get the balance amount of the address
+					balance = Wallet.calculate_balance(historical_blockchain, transaction.input['address'])
+					if balance != transaction.input['amount']:
+						raise Exception("Transaction id %s did not have the correct balance" % (transaction.id))
 				if transaction.id in transaction_ids:
 					raise Exception("Transaction with id %s is not unique" % (transaction.id))
 				transaction_ids.add(transaction.id)
