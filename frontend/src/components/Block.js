@@ -1,5 +1,6 @@
 import React from 'react';
 import {MILLISECONDS} from '../config';
+import Transactions from './Transactions';
 
 //Block component will be receiving a prop object from Blockchain component
 function Block({block}){
@@ -18,7 +19,14 @@ function Block({block}){
 		<div>Date:{timestampDisplay}</div>
 		<div>Hash:{hashDisplay}</div>
 		<div>Previous Hash:{lastHashDisplay}</div>
-		<div>Data:{JSON.stringify(data)}</div>
+		{
+          data.map(transaction => (
+            <div key={transaction.id}>
+              <hr />
+              <Transactions transactions={transaction} />
+            </div>
+          ))
+        }
 		</div>
 		);
 }

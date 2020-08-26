@@ -6,11 +6,11 @@ from backend.config import MINE_RATE
 
 GENESIS_BLOCK = {
 	'timestamp': 0,
-	'hash':0,
-	'last_hash':0,
+	'hash':'0',
+	'last_hash':'0',
 	'difficulty':3,
 	'nonce': 'genesis_nonce',
-	'data': '0'
+	'data': [{'id':'0', 'input':{}, 'output': {}}]
 }
 class Block:
 	"""
