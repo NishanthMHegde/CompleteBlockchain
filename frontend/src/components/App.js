@@ -1,7 +1,7 @@
 import React , {useState} from 'react';
 import Joke from './Joke';
 import Wallet from './Wallet';
-import Blockchain from './Blockchain';
+import {Link} from 'react-router-dom';
 import '../App.css';
 import logo from '../assets/logo.png';
 
@@ -29,7 +29,10 @@ function App() {
     <br />
     <Wallet />
     <br />
-    <Blockchain />
+    <div>
+    <Link to ="/blockchain"> Blockchain </Link><br/>
+    <Link to ="/conduct-transactions"> Conduct Transactions </Link>
+    </div>
     </div>
   );
 }
