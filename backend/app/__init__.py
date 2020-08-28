@@ -64,6 +64,18 @@ def make_transaction():
 def get_wallet_info():
     return jsonify({"address": wallet.address, "balance":wallet.balance})
 
+#code to get a range from blockchain
+@app.route('/blockchain/range')
+def get_blockchain_range():
+    start = int(request.args.get('start'))
+    end = int(request.args.get('end'))
+    #return the blockchain in reverse order
+    return jsonify(blockchain.to_json()[::-1][start:end])
+
+@app.route('/blockchain/length')
+def get_blockchain_length():
+    return jsonify(len(blockchain.chain))
+
 ROOT_PORT = 5000
 PORT = ROOT_PORT
 if os.getenv('PEER'):
@@ -75,4 +87,9 @@ if os.getenv('PEER'):
         print("Chain replacement with root node was successful")
     except Exception as e:
         print("Chain replacement was not successful: %s" % (e))
+
+#Seed a few data into the backend to help us evaluate the frontend design
+if os.getenv('SEED'):
+    for i in range(0,10):
+        blockchain.add_block([Transactions(Wallet(), Wallet().address, i).to_json()])
 app.run(port=PORT)
