@@ -76,6 +76,21 @@ def get_blockchain_range():
 def get_blockchain_length():
     return jsonify(len(blockchain.chain))
 
+@app.route('/transactions/history')
+def get_historical_recipiets():
+    historical_recipients = set()
+    for index,block in enumerate(blockchain.chain):
+        if index ==0:
+            continue
+        for transaction in block.data:
+            historical_recipients.update(transaction['output'].keys())
+    return jsonify(list(historical_recipients))
+
+@app.route('/transactions')
+def get_all_transactions():
+    transaction_data = transaction_pool.transaction_data()
+    return jsonify(transaction_data)
+
 ROOT_PORT = 5000
 PORT = ROOT_PORT
 if os.getenv('PEER'):
@@ -92,4 +107,7 @@ if os.getenv('PEER'):
 if os.getenv('SEED'):
     for i in range(0,10):
         blockchain.add_block([Transactions(Wallet(), Wallet().address, i).to_json()])
+    for i in range(0, 10):
+        transaction_pool.set_transaction(Transactions(Wallet(), Wallet().address, i))
+        
 app.run(port=PORT)

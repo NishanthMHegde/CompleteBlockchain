@@ -2,10 +2,12 @@ import React, {useState, useEffect} from 'react';
 import {Button, FormControl, FormGroup} from 'react-bootstrap';
 import {API_BASE_URL} from '../config';
 import {Link} from 'react-router-dom';
+import history from '../history';
 
 function ConductTransactions(){
 	const [recipient, setReceipient] = useState('');
 	const [amount, setAmount] = useState('');
+	const [popularRecipients, setPopularReceipients] = useState([]);
 
 	const onRecipientChange = (event) => {
 		setReceipient(event.target.value);
@@ -25,14 +27,22 @@ function ConductTransactions(){
 			then(json =>{
 				console.log('Submit Transaction status', json);
 				alert('Success!');
+				history.push('/transactions');
 			});
 		}
+
+	useEffect(()=>{
+		fetch(`${API_BASE_URL}/transactions/history`).
+		then(response => response.json()).
+		then(json => setPopularReceipients(json));
+	}, []);
 	
 
 return (
 	<div className="ConductTransaction">
 	<Link to ="/"> Home </Link><br/>
-    <Link to ="/blockchain"> Blockchain </Link>
+    <Link to ="/blockchain"> Blockchain </Link><br />
+    <Link to ="/transactions"> Transactions </Link><br/>
     <hr />
 	<FormGroup>
 	<FormControl 
@@ -44,6 +54,14 @@ return (
 	</FormGroup>
 	<br />
 	<Button variant="danger" size="sm" onClick={submitTransaction}>Submit Transaction</Button>
+	<br />
+	<hr />
+	<h4> Popular Recipient of Transactions </h4>
+	{
+		popularRecipients.map((popularRecipient, i) =>
+			(<span key={popularRecipient}><u>{popularRecipient}</u>{i !== popularRecipients.length-1 ? ', ' : ''}</span>)
+		)
+	}
 	</div>
 
 	);

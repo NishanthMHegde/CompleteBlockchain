@@ -30,7 +30,8 @@ function Blockchain(){
 return(
 	<div className="Blockchain">
 	<Link to ="/"> Home </Link><br/>
-    <Link to ="/conduct-transactions"> Conduct Transactions </Link>
+    <Link to ="/conduct-transactions"> Conduct Transactions </Link><br />
+    <Link to ="/transactions"> Transactions </Link><br/>
     <hr />
 	<h3>BLockchain</h3>
 	<div>{blockchainInfo.map(block => <Block key={block.hash} block={block}/>)}</div>

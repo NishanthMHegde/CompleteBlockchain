@@ -4,19 +4,19 @@ import './index.css';
 import App from './components/App';
 import Blockchain from './components/Blockchain';
 import ConductTransactions from './components/ConductTransactions';
-import {Router, Switch, Route} from 'react-router-dom';
-import {createBrowserHistory} from 'history';
+import TransactionPool from './components/TransactionPool';
+import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import history from './history';
 
 ReactDOM.render(
-  <React.StrictMode>
-  <Router history={createBrowserHistory()} >
+  <BrowserRouter history={history} >
 	<Switch>
 	<Route path="/" exact component={App} />
-	<Route path="/blockchain" exact component={Blockchain} />
-	<Route path="/conduct-transactions" exact component={ConductTransactions} />
+	<Route path="/blockchain" component={Blockchain} />
+	<Route path="/conduct-transactions" component={ConductTransactions} />
+	<Route path="/transactions" component={TransactionPool} />
 	</Switch>
-	</Router>
-  </React.StrictMode>,
+	</BrowserRouter>,
   document.getElementById('root')
 );
 

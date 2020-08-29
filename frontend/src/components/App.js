@@ -30,8 +30,9 @@ function App() {
     <Wallet />
     <br />
     <div>
-    <Link to ="/blockchain"> Blockchain </Link><br/>
-    <Link to ="/conduct-transactions"> Conduct Transactions </Link>
+    <Link to ="/blockchain"> Blockchain </Link><br />
+    <Link to ="/conduct-transactions"> Conduct Transactions </Link><br />
+    <Link to ="/transactions"> Transactions </Link><br/>
     </div>
     </div>
   );
