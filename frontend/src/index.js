@@ -5,18 +5,18 @@ import App from './components/App';
 import Blockchain from './components/Blockchain';
 import ConductTransactions from './components/ConductTransactions';
 import TransactionPool from './components/TransactionPool';
-import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import {Router, Switch, Route} from 'react-router-dom';
 import history from './history';
 
 ReactDOM.render(
-  <BrowserRouter history={history} >
+  <Router history={history} >
 	<Switch>
 	<Route path="/" exact component={App} />
 	<Route path="/blockchain" component={Blockchain} />
 	<Route path="/conduct-transactions" component={ConductTransactions} />
 	<Route path="/transactions" component={TransactionPool} />
 	</Switch>
-	</BrowserRouter>,
+	</Router>,
   document.getElementById('root')
 );
 
